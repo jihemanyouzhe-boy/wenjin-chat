@@ -1,0 +1,18 @@
+# 运行时数据（用户、会话、API Key 都在这里，绝不能提交）
+data/*
+!data/.gitkeep
+*.broken-*
+*.tmp
+
+# 本地配置
+.env
+.env.*
+!.env.example
+
+# 依赖与系统文件
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

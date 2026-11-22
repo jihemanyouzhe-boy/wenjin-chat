@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 报告安全漏洞
+    url: https://github.com/jihemanyouzhe-boy/wenjin-chat/security/advisories/new
+    about: 请通过私密漏洞报告提交，不要公开发 issue
+  - name: 📖 部署文档与常见问题
+    url: https://github.com/jihemanyouzhe-boy/wenjin-chat#faq
+    about: 先看看 README 的部署指南和常见问题

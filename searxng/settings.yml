@@ -1,0 +1,58 @@
+# SearXNG 示例配置，给「问津」的联网搜索使用。
+# 关键点：search.formats 里必须有 json；server.limiter 关闭（只在内网给后端调用）。
+# secret_key 会被环境变量 SEARXNG_SECRET 覆盖，不要把真实密钥写进这个文件。
+use_default_settings:
+  engines:
+    # 只保留这些引擎。服务器在海外可以用 google / duckduckgo / brave / wikipedia；
+    # 在中国大陆通常只有 bing(cn) / 360search / sogou wechat / chinaso news / bilibili / mojeek / github 能用。
+    keep_only:
+      - bing
+      - duckduckgo
+      - brave
+      - google
+      - wikipedia
+      - mojeek
+      - github
+      - 360search
+      - sogou wechat
+      - chinaso news
+      - bilibili
+
+general:
+  instance_name: wenjin-search
+  debug: false
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  default_lang: "auto"
+  formats: [html, json]
+
+server:
+  secret_key: "overridden-by-SEARXNG_SECRET"
+  limiter: false
+  public_instance: false
+  image_proxy: false
+  method: "GET"
+  bind_address: "0.0.0.0"
+  port: 8080
+
+outgoing:
+  request_timeout: 4.0
+  max_request_timeout: 8.0
+  pool_connections: 50
+  pool_maxsize: 10
+
+ui:
+  static_use_hash: true
+
+engines:
+  # 在中国大陆部署时，把 bing 指向 cn.bing.com 通常更稳定（取消下面两行注释）
+  # - name: bing
+  #   base_url: https://cn.bing.com
+  - name: mojeek
+    disabled: false
+    inactive: false
+  - name: chinaso news
+    disabled: false
+    inactive: false

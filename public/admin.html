@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>问津 · 管理后台</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+:root{--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);
+  --bg:#fff;--bg2:#f7f7f8;--bg3:#efeff1;--hover:rgba(0,0,0,.045);--text:#0f1115;--text2:#4b5160;--muted:#8a8f9c;--line:#ebebef;--line2:#dcdce2;
+  --pri:#111214;--pri-t:#fff;--acc:#3a63f3;--acc-soft:rgba(58,99,243,.09);--ok:#16a34a;--err:#dc2626;--warn:#d97706;--shadow2:0 12px 48px rgba(16,17,20,.14)}
+@media (prefers-color-scheme:dark){:root{--bg:#141517;--bg2:#1b1c1f;--bg3:#232428;--hover:rgba(255,255,255,.05);--text:#ececee;--text2:#b4b6bd;--muted:#80838c;--line:#26272b;--line2:#34353a;--pri:#f2f2f3;--pri-t:#111214;--acc:#7b9bff;--acc-soft:rgba(123,155,255,.12);--shadow2:0 16px 60px rgba(0,0,0,.55)}}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font:15px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;background:var(--bg2);color:var(--text);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+.ic{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* layout */
+.shell{display:flex;min-height:100%}
+nav.side{width:232px;flex:none;padding:18px 12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;border-right:1px solid var(--line);background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 10px 18px;font-weight:650;font-size:16px}
+.brand .lg{width:28px;height:28px;border-radius:9px;background:var(--pri);color:var(--pri-t);display:grid;place-items:center;font-size:14px}
+.brand small{font-weight:500;color:var(--muted);font-size:12px;margin-left:auto;padding:2px 7px;border-radius:6px;background:var(--bg3)}
+.nv{display:flex;align-items:center;gap:11px;height:40px;padding:0 12px;border-radius:10px;color:var(--text2);font-size:14px;transition:background .18s,color .18s;position:relative}
+.nv:hover{background:var(--hover)}
+.nv.a{background:var(--bg3);color:var(--text);font-weight:600}
+.nv .n{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.side .sp{flex:1}
+main{flex:1;min-width:0;padding:28px 32px 80px;max-width:1120px}
+.ph{display:flex;align-items:flex-end;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.ph h1{font-size:24px;font-weight:680;letter-spacing:-.02em}
+.ph p{color:var(--muted);font-size:13.5px;flex-basis:100%;margin-top:-8px}
+.ph .r{margin-left:auto;display:flex;gap:8px}
+.view{animation:vIn .45s var(--ease) both}
+@keyframes vIn{from{opacity:0;transform:translateY(8px)}}
+/* components */
+.card{background:var(--bg);border-radius:16px;box-shadow:0 0 0 1px var(--line);padding:18px}
+.grid{display:grid;gap:12px}
+.stats{grid-template-columns:repeat(3,1fr)}
+.stat{position:relative;overflow:hidden}
+.stat small{color:var(--muted);font-size:12.5px}
+.stat b{display:block;font-size:30px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:2px}
+.stat .ic{position:absolute;right:16px;top:16px;color:var(--muted);opacity:.6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 15px;border-radius:11px;font-size:14px;font-weight:550;transition:background .2s,transform .15s,opacity .2s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn.p{background:var(--pri);color:var(--pri-t)}.btn.p:hover{opacity:.88}
+.btn.s{background:var(--bg);box-shadow:inset 0 0 0 1px var(--line2)}.btn.s:hover{background:var(--hover)}
+.btn.g:hover{background:var(--hover)}
+.btn.d{color:var(--err)}.btn.d:hover{background:color-mix(in srgb,var(--err) 8%,transparent)}
+.btn.sm{height:32px;padding:0 11px;font-size:13px;border-radius:9px}
+.btn.full{width:100%}
+.btn:disabled{opacity:.5;pointer-events:none}
+.ib{width:34px;height:34px;border-radius:9px;display:inline-grid;place-items:center;color:var(--text2);transition:background .2s}
+.ib:hover{background:var(--hover)}
+.fld{margin-bottom:14px}
+.fld>label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:500}
+.inp{width:100%;height:42px;padding:0 13px;border-radius:11px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line2);border:0;outline:0;font-size:15px;transition:box-shadow .2s}
+.inp:focus{box-shadow:inset 0 0 0 1.5px var(--text)}
+textarea.inp{height:auto;min-height:80px;padding:10px 13px;resize:vertical}
+select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8f9c' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:34px}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.6}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.badge{font-size:11.5px;padding:1px 8px;border-radius:6px;background:var(--bg3);color:var(--text2);white-space:nowrap}
+.badge.ok{color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.badge.err{color:var(--err);background:color-mix(in srgb,var(--err) 9%,transparent)}
+.badge.acc{color:var(--acc);background:var(--acc-soft)}
+.sw{width:40px;height:24px;border-radius:12px;background:var(--line2);position:relative;transition:background .25s;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .35s var(--spring)}
+.sw.on{background:var(--ok)}.sw.on::after{transform:translateX(16px)}
+.swrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.swrow div{flex:1}.swrow b{font-weight:550;font-size:14.5px;display:block}.swrow small{font-size:12.5px;color:var(--muted)}
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
+.empty .ic{width:30px;height:30px;margin-bottom:10px;opacity:.6}
+.empty b{display:block;color:var(--text);font-size:15px;font-weight:600;margin-bottom:4px}
+/* list rows */
+.rows{display:grid;gap:10px}
+.rw{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);border-radius:14px;box-shadow:0 0 0 1px var(--line);transition:box-shadow .2s,transform .3s var(--ease);animation:vIn .45s var(--ease) both}
+.rw:hover{box-shadow:0 0 0 1px var(--line2),0 4px 18px rgba(0,0,0,.04)}
+.rw .av{width:38px;height:38px;border-radius:11px;background:var(--bg2);display:grid;place-items:center;font-weight:650;font-size:14px;flex:none;box-shadow:inset 0 0 0 1px var(--line)}
+.rw .tt{flex:1;min-width:0}
+.rw .tt b{font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rw .tt small{display:block;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rw .acts{display:flex;align-items:center;gap:4px;flex:none}
+.rw.off{opacity:.55}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+.price{font-variant-numeric:tabular-nums;font-size:13px;color:var(--text2);white-space:nowrap}
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-weight:500;color:var(--muted);font-size:12.5px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tr{transition:background .15s}.tbl tbody tr:hover{background:var(--bg2)}
+.tblwrap{overflow:auto;padding:4px 6px}
+/* chart */
+.chart{display:flex;align-items:flex-end;gap:10px;height:170px;padding-top:30px}
+.chart div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.chart i{width:100%;max-width:38px;border-radius:7px 7px 3px 3px;background:var(--text);opacity:.85;transform-origin:bottom;animation:grow .8s var(--ease) both;min-height:3px;position:relative}
+.chart i[data-v="0"]{opacity:.15}
+.chart i:hover{opacity:1}
+.chart i::after{content:attr(data-v);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);font-size:11px;color:var(--text2);font-style:normal;white-space:nowrap}
+.chart span{font-size:11.5px;color:var(--muted)}
+@keyframes grow{from{transform:scaleY(0)}}
+.steps{display:grid;gap:8px}
+.step{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:var(--bg2);text-align:left;width:100%;transition:background .2s}
+.step:hover{background:var(--bg3)}
+.step .dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px var(--line2);font-size:12px;color:var(--muted);flex:none}
+.step.done .dot{background:var(--ok);box-shadow:none;color:#fff}
+.step.done b{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line2)}
+.step b{font-weight:550;font-size:14px;flex:1}
+/* chips */
+.mchips{display:flex;flex-wrap:wrap;gap:6px;max-height:240px;overflow:auto;padding:2px}
+.mchip{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 12px 0 8px;border-radius:10px;font-size:12.5px;box-shadow:inset 0 0 0 1px var(--line2);color:var(--text2);transition:background .2s,color .2s,transform .25s var(--spring);animation:vIn .35s var(--ease) both;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.mchip:hover{background:var(--hover)}.mchip:active{transform:scale(.95)}
+.mchip .bx{width:16px;height:16px;border-radius:5px;box-shadow:inset 0 0 0 1.5px var(--line2);display:grid;place-items:center;transition:background .2s}
+.mchip .bx .ic{width:11px;height:11px;stroke-width:3;opacity:0;transform:scale(.4);transition:.25s var(--spring)}
+.mchip.on{background:var(--acc-soft);color:var(--acc);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--acc) 40%,transparent)}
+.mchip.on .bx{background:var(--acc);box-shadow:none;color:#fff}.mchip.on .bx .ic{opacity:1;transform:scale(1)}
+.mchip.has{opacity:.45;pointer-events:none}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.presets button{height:28px;padding:0 10px;border-radius:8px;font-size:12.5px;box-shadow:inset 0 0 0 1px var(--line2);color:var(--text2);transition:background .2s}
+.presets button:hover{background:var(--hover)}
+.search{display:flex;align-items:center;gap:8px;height:40px;padding:0 13px;border-radius:11px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--line2);color:var(--muted);max-width:320px;flex:1}
+.search input{border:0;outline:0;background:none;flex:1;font-size:14.5px;color:var(--text);min-width:0}
+/* dialog */
+#layer{position:fixed;inset:0;z-index:50;display:none}
+#layer.on{display:grid;place-items:center;padding:20px}
+.scrim{position:absolute;inset:0;background:rgba(10,10,12,.42);backdrop-filter:blur(3px);animation:fd .25s both}
+@keyframes fd{from{opacity:0}}
+.dlg{position:relative;background:var(--bg);border-radius:20px;width:min(560px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;box-shadow:var(--shadow2);animation:dIn .38s var(--spring) both}
+@keyframes dIn{from{opacity:0;transform:translateY(14px) scale(.97)}}
+.dh{display:flex;align-items:center;gap:10px;padding:16px 18px 6px}.dh h3{font-size:17px;font-weight:650;flex:1}
+.db{padding:12px 18px 18px;overflow:auto}
+.df{padding:12px 18px 18px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--line)}
+/* toast */
+#toasts{position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:var(--pri);color:var(--pri-t);font-size:14px;box-shadow:var(--shadow2);animation:tIn .45s var(--spring) both;max-width:92vw}
+.toast.err .ic{color:#f87171}.toast.ok .ic{color:#4ade80}
+@keyframes tIn{from{opacity:0;transform:translateY(-12px) scale(.95)}}
+.spin{width:15px;height:15px;border:2px solid color-mix(in srgb,currentColor 25%,transparent);border-top-color:currentColor;border-radius:50%;animation:sp .8s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* auth */
+.auth{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(800px 400px at 50% -10%,var(--bg3),transparent),var(--bg2)}
+.auth .card{width:min(400px,100%);padding:30px 26px;animation:dIn .5s var(--spring) both}
+.auth .lg{width:44px;height:44px;border-radius:14px;background:var(--pri);color:var(--pri-t);display:grid;place-items:center;font-weight:700;font-size:18px;margin:0 auto 16px}
+.auth h2{text-align:center;font-size:21px;font-weight:680}
+.auth p{text-align:center;color:var(--muted);font-size:13.5px;margin:6px 0 22px}
+.errt{color:var(--err)}.okt{color:var(--ok)}
+.sec{margin-top:22px}.sec>h2{font-size:15px;font-weight:650;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+/* mobile */
+.mtab{display:none}
+@media (max-width:860px){
+  nav.side{display:none}
+  main{padding:20px 16px calc(96px + env(safe-area-inset-bottom))}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .row3{grid-template-columns:1fr 1fr}
+  .stat b{font-size:24px}
+  .mtab{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px) saturate(1.6);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .mtab button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;color:var(--muted);padding:4px 0;transition:color .2s}
+  .mtab button.a{color:var(--text);font-weight:600}
+  .rw{flex-wrap:wrap;padding:13px 14px}
+  .rw .acts{width:100%;justify-content:flex-end;border-top:1px solid var(--line);padding-top:8px;margin-top:2px}
+  #layer.on{place-items:end center;padding:0}
+  .dlg{width:100%;border-radius:20px 20px 0 0;max-height:92vh;animation:sUp .42s var(--ease) both}
+  @keyframes sUp{from{transform:translateY(100%)}}
+  .ph h1{font-size:21px}
+  .ph .r{margin-left:0;width:100%}.ph .r .btn{flex:1}
+  .search{max-width:none}
+}
+@media (max-width:420px){.row2{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="layer"></div>
+<div id="toasts"></div>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const P={home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>',plug:'<path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0zM12 17v5"/>',layers:'<path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/>',users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 4a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',plus:'<path d="M12 5v14M5 12h14"/>',x:'<path d="M18 6 6 18M6 6l12 12"/>',check:'<path d="m5 12 5 5L20 7"/>',edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>',zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',coin:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9a2.5 2.5 0 0 0-2.5-1.5c-1.4 0-2.5.8-2.5 2s1.1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2A2.6 2.6 0 0 1 9.5 15M12 6v1.5M12 16.5V18"/>',out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',ext:'<path d="M7 17 17 7M8 7h9v9"/>',key:'<circle cx="8" cy="15" r="4"/><path d="m10.8 12.2 8.7-8.7M17 6l3 3"/>',chat:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>',alert:'<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',lock:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',ban:'<circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6 8.5-6"/>',send:'<path d="M21 3 10 14"/><path d="M21 3 14.5 21l-4.5-7-7-4.5Z"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4L21 8"/><path d="M21 3v5h-5"/>'};
+const I=n=>`<svg class="ic" viewBox="0 0 24 24">${P[n]||''}</svg>`;
+const fmt=n=>{n=+n||0;return n>=1e8?(n/1e8).toFixed(1)+'亿':n>=1e4?(n/1e4).toFixed(1)+'万':String(Math.round(n*100)/100)};
+const ago=t=>{const s=(Date.now()-t)/1000;return s<60?'刚刚':s<3600?Math.floor(s/60)+' 分钟前':s<86400?Math.floor(s/3600)+' 小时前':new Date(t).toLocaleDateString('zh-CN')};
+
+const PRESETS=[['DeepSeek 官方','https://api.deepseek.com','deepseek'],['硅基流动','https://api.siliconflow.cn/v1','openai'],['通义千问','https://dashscope.aliyuncs.com/compatible-mode/v1','openai'],['Kimi','https://api.moonshot.cn/v1','openai'],['智谱','https://open.bigmodel.cn/api/paas/v4','openai'],['豆包','https://ark.cn-beijing.volces.com/api/v3','openai'],['OpenRouter','https://openrouter.ai/api/v1','openai'],['OpenAI','https://api.openai.com/v1','openai']];
+
+const A={
+  tk:localStorage.getItem('xy_admin')||'',st:null,tab:location.hash.slice(1)||'home',users:null,q:'',
+  async api(path,o){o=o||{};const r=await fetch('/api'+path,{method:o.method||'GET',headers:{'Content-Type':'application/json',...(this.tk?{Authorization:'Bearer '+this.tk}:{})},body:o.body?JSON.stringify(o.body):undefined});
+    let j={};try{j=await r.json()}catch(e){}if(!r.ok){if(r.status===401&&path!=='/admin/login'){this.tk='';localStorage.removeItem('xy_admin');this.boot()}throw new Error((j.error&&j.error.message)||'请求失败（'+r.status+'）')}return j},
+  toast(m,k){const t=document.createElement('div');t.className='toast '+(k||'');t.innerHTML=(k==='err'?I('alert'):k==='ok'?I('check'):'')+'<span>'+esc(m)+'</span>';$('#toasts').appendChild(t);setTimeout(()=>{t.style.transition='.3s';t.style.opacity=0;t.style.transform='translateY(-8px)';setTimeout(()=>t.remove(),300)},2600)},
+  dlg(h){const L=$('#layer');L.innerHTML='<div class="scrim" onclick="A.close()"></div><div class="dlg">'+h+'</div>';L.classList.add('on')},
+  close(){const L=$('#layer');L.classList.remove('on');L.innerHTML=''},
+  async busy(btn,fn){const t=btn&&btn.innerHTML;if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span>'}try{return await fn()}catch(e){this.toast(e.message,'err')}finally{if(btn&&document.contains(btn)){btn.disabled=false;btn.innerHTML=t}}},
+
+  async boot(){let cfg={};try{cfg=await (await fetch('/api/config')).json()}catch(e){}
+    if(!this.tk)return this.auth(cfg.adminReady);
+    try{this.st=await this.api('/admin/state');this.shell()}catch(e){if(this.tk)this.toast(e.message,'err')}},
+  auth(ready){$('#app').innerHTML=`<div class="auth"><div class="card"><div class="lg">问</div><h2>${ready?'管理后台':'设置管理员密码'}</h2><p>${ready?'输入管理员密码登录':'第一次使用，先设一个管理员密码（至少 8 位），请记好'}</p>
+    <form onsubmit="event.preventDefault();A.login(${ready?1:0})"><div class="fld"><input class="inp" id="apw" type="password" placeholder="管理员密码" autocomplete="${ready?'current-password':'new-password'}" autofocus required></div>
+    ${ready?'':'<div class="fld"><input class="inp" id="apw2" type="password" placeholder="再输一次" autocomplete="new-password" required></div>'}
+    <div id="aerr" class="hint errt" style="min-height:18px;margin:-6px 0 8px"></div><button class="btn p full" id="abtn" style="height:44px">${ready?'登录':'完成设置'}</button></form></div></div>`},
+  async login(ready){const pw=$('#apw').value;if(!ready&&pw!==$('#apw2').value){$('#aerr').textContent='两次输入不一样';return}
+    await this.busy($('#abtn'),async()=>{try{const j=await this.api(ready?'/admin/login':'/admin/setup',{method:'POST',body:{password:pw}});this.tk=j.token;localStorage.setItem('xy_admin',j.token);this.boot()}catch(e){$('#aerr').textContent=e.message;$('.auth .card').animate([{transform:'translateX(0)'},{transform:'translateX(-7px)'},{transform:'translateX(7px)'},{transform:'translateX(0)'}],{duration:280})}})},
+  logout(){this.api('/logout',{method:'POST'}).catch(()=>{});this.tk='';localStorage.removeItem('xy_admin');this.boot()},
+
+  TABS:[['home','概览','home'],['channels','渠道','plug'],['models','模型','layers'],['users','用户','users'],['codes','兑换码','coin'],['logs','记录','list'],['settings','设置','gear']],
+  shell(){const s=this.st;const cnt={channels:s.channels.length,models:s.models.length,users:s.stats.users};
+    $('#app').innerHTML=`<div class="shell"><nav class="side"><div class="brand"><span class="lg">问</span>${esc(s.settings.siteName)}<small>后台</small></div>
+      ${this.TABS.map(([k,n,ic])=>`<button class="nv ${k===this.tab?'a':''}" onclick="A.go('${k}')">${I(ic)}${n}${cnt[k]!==undefined?`<span class="n">${cnt[k]}</span>`:''}</button>`).join('')}
+      <div class="sp"></div><a class="nv" href="/" target="_blank">${I('chat')}打开聊天页${I('ext')}</a><button class="nv" onclick="A.logout()">${I('out')}退出</button></nav>
+      <main id="main"></main></div>
+      <div class="mtab">${this.TABS.map(([k,n,ic])=>`<button class="${k===this.tab?'a':''}" onclick="A.go('${k}')">${I(ic)}${n}</button>`).join('')}</div>`;
+    this.render()},
+  go(t){this.tab=t;history.replaceState(null,'','#'+t);document.querySelectorAll('.nv,.mtab button').forEach(b=>b.classList.toggle('a',(b.getAttribute('onclick')||'').includes("'"+t+"'")));this.render();scrollTo({top:0})},
+  async refresh(){this.st=await this.api('/admin/state');this.render()},
+  render(){const m=$('#main');if(!m)return;m.innerHTML='<div class="view">'+this['v_'+this.tab]()+'</div>';if(this.tab==='users')this.loadUsers();if(this.tab==='logs')this.loadLogs();if(this.tab==='codes')this.loadCodes();
+    m.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count;const t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/800);el.textContent=fmt(to*(1-Math.pow(1-k,4)));if(k<1)requestAnimationFrame(f)})(t0)})},
+
+  v_home(){const s=this.st,x=s.stats;const mx=Math.max(1,...x.byDay.map(d=>d.calls));
+    const steps=[['添加一个渠道（填你的 API Key）',s.channels.length>0,'channels'],['上架模型并设置积分价格',s.models.some(m=>m.enabled),'models'],['调整注册赠送和签到积分',s.settings.checkin!==30||s.settings.signupBonus!==100,'settings']];
+    return `<div class="ph"><h1>概览</h1><p>过去 24 小时的运行情况</p><div class="r"><button class="btn s sm" onclick="A.refresh()">${I('refresh')}刷新</button></div></div>
+    ${steps.every(z=>z[1])?'':`<div class="card" style="margin-bottom:12px"><b style="font-weight:650;font-size:15px">三步上线</b><div class="hint" style="margin:2px 0 12px">做完这三步，用户登录后就能用你配的模型。</div><div class="steps">${steps.map(([t,d,g],i)=>`<button class="step ${d?'done':''}" onclick="A.go('${g}')"><span class="dot">${d?I('check'):i+1}</span><b>${t}</b>${I('ext')}</button>`).join('')}</div></div>`}
+    <div class="grid stats">${[['用户总数',x.users,'users'],['今日新增',x.newUsers24,'plus'],['今日签到',x.checkins,'cal'],['24 小时调用',x.calls24,'chat'],['24 小时消耗积分',x.credits24,'coin'],['用户手里的积分',x.creditsOut,'key']].map(([t,v,ic],i)=>`<div class="card stat" style="animation:vIn .45s var(--ease) ${i*.05}s both">${I(ic)}<small>${t}</small><b data-count="${v}">0</b></div>`).join('')}</div>
+    <div class="card" style="margin-top:12px"><div style="display:flex;align-items:center"><b style="font-weight:650">近 7 天调用次数</b><span class="hint" style="margin:0 0 0 auto">共 ${fmt(x.tokens24)} tokens / 24 小时</span></div>
+    <div class="chart">${x.byDay.map((d,i)=>`<div><i data-v="${d.calls}" style="height:${Math.max(2,d.calls/mx*100)}%;animation-delay:${i*.06}s"></i><span>${d.d}</span></div>`).join('')}</div></div>`},
+
+  v_channels(){const s=this.st;return `<div class="ph"><h1>渠道</h1><p>渠道就是你自己的 API Key。Key 只保存在服务器上，用户永远看不到。</p><div class="r"><button class="btn p" onclick="A.chEdit()">${I('plus')}添加渠道</button></div></div>
+    ${s.channels.length?`<div class="rows">${s.channels.map((c,i)=>`<div class="rw ${c.enabled?'':'off'}" style="animation-delay:${i*.04}s"><span class="av">${esc(c.name.slice(0,1))}</span><div class="tt"><b>${esc(c.name)} <span class="badge">${c.type==='deepseek'?'DeepSeek 官方':'OpenAI 兼容'}</span>${c.enabled?'':'<span class="badge">已停用</span>'}</b><small class="mono">${esc(c.base)} · ${esc(c.keyMask)}</small><small>${s.models.filter(m=>m.channel===c.id).length} 个模型</small></div>
+      <div class="acts"><button class="btn sm g" onclick="A.chTest('${c.id}',this)">${I('zap')}测试</button><button class="sw ${c.enabled?'on':''}" title="启用" onclick="A.chToggle('${c.id}')"></button><button class="ib" onclick="A.chEdit('${c.id}')">${I('edit')}</button><button class="ib" onclick="A.chDel('${c.id}')">${I('trash')}</button></div></div>`).join('')}</div>`
+    :`<div class="card empty">${I('plug')}<b>还没有渠道</b>添加你的 DeepSeek、硅基流动等 API Key，用户就能用你的额度聊天。<div style="margin-top:16px"><button class="btn p" onclick="A.chEdit()">${I('plus')}添加第一个渠道</button></div></div>`}`},
+  chEdit(id){const c=id?this.st.channels.find(x=>x.id===id):{name:'',type:'openai',base:'',enabled:true};
+    this.dlg(`<div class="dh"><h3>${id?'编辑':'添加'}渠道</h3><button class="ib" onclick="A.close()">${I('x')}</button></div><div class="db">
+    <div class="fld"><label>快速选择</label><div class="presets">${PRESETS.map(p=>`<button onclick="$('#cn').value=$('#cn').value||'${p[0]}';$('#cb').value='${p[1]}';$('#ct').value='${p[2]}'">${p[0]}</button>`).join('')}</div></div>
+    <div class="row2"><div class="fld"><label>名称</label><input class="inp" id="cn" value="${esc(c.name)}" placeholder="比如 DeepSeek 主力"></div>
+    <div class="fld"><label>类型</label><select class="inp" id="ct"><option value="openai" ${c.type!=='deepseek'?'selected':''}>OpenAI 兼容</option><option value="deepseek" ${c.type==='deepseek'?'selected':''}>DeepSeek 官方（支持深度思考开关）</option></select></div></div>
+    <div class="fld"><label>接口地址</label><input class="inp mono" id="cb" value="${esc(c.base)}" placeholder="https://api.deepseek.com"></div>
+    <div class="fld"><label>API Key</label><input class="inp mono" id="ck" type="password" autocomplete="off" placeholder="${id?'留空表示不修改（当前 '+esc(c.keyMask)+'）':'sk-...'}"><div class="hint">${I('lock')} 只存在服务器，前端和用户都拿不到。</div></div>
+    <div id="cst" class="hint"></div></div>
+    <div class="df"><button class="btn s" onclick="A.close()">取消</button><button class="btn p" id="csv" onclick="A.chSave('${id||''}')">保存</button></div>`)},
+  async chSave(id){const b={name:$('#cn').value,type:$('#ct').value,base:$('#cb').value.trim(),key:$('#ck').value.trim()};
+    await this.busy($('#csv'),async()=>{this.st=await this.api('/admin/channels'+(id?'/'+id:''),{method:id?'PUT':'POST',body:b});this.close();this.toast(id?'已保存':'渠道已添加，接着去上架模型','ok');this.shell()})},
+  async chToggle(id){const c=this.st.channels.find(x=>x.id===id);try{this.st=await this.api('/admin/channels/'+id,{method:'PUT',body:{enabled:!c.enabled}});this.render()}catch(e){this.toast(e.message,'err')}},
+  async chDel(id){const c=this.st.channels.find(x=>x.id===id);const n=this.st.models.filter(m=>m.channel===id).length;if(!confirm('删除渠道「'+c.name+'」？'+(n?'它下面的 '+n+' 个模型也会一起删除。':'')))return;try{this.st=await this.api('/admin/channels/'+id,{method:'DELETE'});this.toast('已删除');this.shell()}catch(e){this.toast(e.message,'err')}},
+  async chTest(id,btn){await this.busy(btn,async()=>{const j=await this.api('/admin/channels/'+id+'/test',{method:'POST',body:{}});this.toast('连通了 · '+j.ms+'ms · '+(j.reply||'').slice(0,20),'ok')})},
+
+  v_models(){const s=this.st;const chn=Object.fromEntries(s.channels.map(c=>[c.id,c]));
+    return `<div class="ph"><h1>模型</h1><p>上架后，登录用户就能在聊天页选到。积分价格 = 每 1000 tokens 扣多少积分。</p><div class="r"><button class="btn p" onclick="A.mAdd()" ${s.channels.length?'':'disabled'}>${I('plus')}上架模型</button></div></div>
+    ${!s.channels.length?`<div class="card empty">${I('layers')}<b>先添加渠道</b>模型需要挂在某个渠道下。<div style="margin-top:16px"><button class="btn p" onclick="A.go('channels')">去添加渠道</button></div></div>`
+    :s.models.length?`<div class="rows">${s.models.slice().sort((a,b)=>(a.sort||0)-(b.sort||0)).map((m,i)=>`<div class="rw ${m.enabled?'':'off'}" style="animation-delay:${i*.04}s"><span class="av">${I('layers')}</span><div class="tt"><b>${esc(m.name)}${m.think?'<span class="badge acc">深度思考</span>':''}${m.search?'<span class="badge acc">联网</span>':''}${chn[m.channel]?'':'<span class="badge err">渠道已删</span>'}</b><small class="mono">${esc(m.id)} → ${esc(m.upstream)} · ${esc((chn[m.channel]||{}).name||'')}</small><small class="price">输入 ${m.inPrice} · 输出 ${m.outPrice} 积分 / 千 tokens · ${fmt(m.ctx)} 上下文</small></div>
+      <div class="acts"><button class="sw ${m.enabled?'on':''}" onclick="A.mToggle('${m.id}')"></button><button class="ib" onclick="A.mEdit('${m.id}')">${I('edit')}</button><button class="ib" onclick="A.mDel('${m.id}')">${I('trash')}</button></div></div>`).join('')}</div>`
+    :`<div class="card empty">${I('layers')}<b>还没有上架模型</b>从渠道里自动检测模型，点选就能上架。<div style="margin-top:16px"><button class="btn p" onclick="A.mAdd()">${I('search')}检测并上架</button></div></div>`}`},
+  mAdd(){const s=this.st;this._sel=new Set();this._ids=[];
+    this.dlg(`<div class="dh"><h3>上架模型</h3><button class="ib" onclick="A.close()">${I('x')}</button></div><div class="db">
+    <div class="fld"><label>渠道</label><select class="inp" id="mc" onchange="A.mDetect()">${s.channels.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div>
+    <div id="mdet"></div>
+    <div class="row2"><div class="fld"><label>输入价格（积分 / 千 tokens）</label><input class="inp" id="mi" type="number" step="0.01" value="1"></div><div class="fld"><label>输出价格（积分 / 千 tokens）</label><input class="inp" id="mo" type="number" step="0.01" value="2"></div></div>
+    <div class="hint" style="margin-top:-6px">参考：签到一次 ${s.settings.checkin} 积分。按输入 1、输出 2 算，一轮 3000 字的对话大约扣 5 积分。</div></div>
+    <div class="df"><button class="btn s" onclick="A.close()">取消</button><button class="btn p" id="msv" onclick="A.mAddSave()">上架所选</button></div>`);this.mDetect()},
+  async mDetect(){const id=$('#mc').value;const box=$('#mdet');this._sel=new Set();box.innerHTML='<div class="hint"><span class="spin"></span> 正在从渠道检测模型…</div>';
+    try{const j=await this.api('/admin/channels/'+id+'/models');this._ids=j.ids;const has=new Set(this.st.models.filter(m=>m.channel===id).map(m=>m.upstream));
+      box.innerHTML=`<div class="fld"><label>检测到 ${j.ids.length} 个模型，点选要上架的</label>${j.ids.length>10?`<div class="search" style="max-width:none;margin-bottom:8px">${I('search')}<input placeholder="搜索" oninput="document.querySelectorAll('#mdet .mchip').forEach(c=>c.style.display=c.textContent.toLowerCase().includes(this.value.toLowerCase())?'':'none')"></div>`:''}
+      <div class="mchips">${j.ids.map((x,i)=>`<button class="mchip ${has.has(x)?'has':''}" style="animation-delay:${Math.min(i,24)*.018}s" onclick="A.mPick(this)" data-id="${esc(x)}"><span class="bx">${I('check')}</span>${esc(x)}${has.has(x)?' · 已上架':''}</button>`).join('')}</div></div>`}
+    catch(e){box.innerHTML=`<div class="hint errt" style="margin-bottom:10px">${esc(e.message)}</div><div class="fld"><label>手动填写上游模型名（多个用逗号分隔）</label><input class="inp mono" id="mman" placeholder="deepseek-chat"></div>`}},
+  mPick(el){const id=el.dataset.id;el.classList.toggle('on');el.classList.contains('on')?this._sel.add(id):this._sel.delete(id);$('#msv').textContent='上架所选'+(this._sel.size?'（'+this._sel.size+'）':'')},
+  async mAddSave(){const ch=$('#mc').value;const man=$('#mman');let ids=[...this._sel];if(man)ids=man.value.split(/[,，\s]+/).filter(Boolean);if(!ids.length){this.toast('先选一个模型','err');return}
+    const think=this.st.channels.find(c=>c.id===ch).type==='deepseek';
+    await this.busy($('#msv'),async()=>{for(const up of ids){let id=up.split('/').pop().replace(/[^\w.\-]/g,'-').toLowerCase();if(this.st.models.some(m=>m.id===id))id=id+'-'+Math.random().toString(36).slice(2,5);
+      this.st=await this.api('/admin/models',{method:'POST',body:{id,name:up.split('/').pop(),channel:ch,upstream:up,inPrice:+$('#mi').value,outPrice:+$('#mo').value,ctx:/deepseek/i.test(up)?1000000:128000,think,search:false,enabled:true}})}
+      this.close();this.toast('已上架 '+ids.length+' 个模型','ok');this.shell()})},
+  mEdit(id){const m=this.st.models.find(x=>x.id===id);
+    this.dlg(`<div class="dh"><h3>编辑模型</h3><button class="ib" onclick="A.close()">${I('x')}</button></div><div class="db">
+    <div class="row2"><div class="fld"><label>显示名称</label><input class="inp" id="en" value="${esc(m.name)}"></div><div class="fld"><label>排序（小的在前）</label><input class="inp" id="es" type="number" value="${m.sort||0}"></div></div>
+    <div class="fld"><label>一句话介绍（可选）</label><input class="inp" id="ed" value="${esc(m.desc||'')}" placeholder="比如：便宜好用，日常聊天首选"></div>
+    <div class="row2"><div class="fld"><label>渠道</label><select class="inp" id="ec">${this.st.channels.map(c=>`<option value="${c.id}" ${c.id===m.channel?'selected':''}>${esc(c.name)}</option>`).join('')}</select></div><div class="fld"><label>上游模型名</label><input class="inp mono" id="eu" value="${esc(m.upstream)}"></div></div>
+    <div class="row3"><div class="fld"><label>输入积分/千</label><input class="inp" id="ei" type="number" step="0.01" value="${m.inPrice}"></div><div class="fld"><label>输出积分/千</label><input class="inp" id="eo" type="number" step="0.01" value="${m.outPrice}"></div><div class="fld"><label>上下文</label><input class="inp" id="ex" type="number" value="${m.ctx}"></div></div>
+    <div class="swrow"><div><b>深度思考</b><small>DeepSeek 官方渠道可用，用户打开开关时生效</small></div><button class="sw ${m.think?'on':''}" id="et" onclick="this.classList.toggle('on')"></button></div>
+    <div class="swrow"><div><b>联网搜索</b><small>仅 DeepSeek 官方渠道</small></div><button class="sw ${m.search?'on':''}" id="ew" onclick="this.classList.toggle('on')"></button></div>
+    <div class="hint mono">对外 ID：${esc(m.id)}</div></div>
+    <div class="df"><button class="btn s" onclick="A.close()">取消</button><button class="btn p" id="esv" onclick="A.mSave('${m.id}')">保存</button></div>`)},
+  async mSave(id){const b={name:$('#en').value,sort:+$('#es').value,desc:$('#ed').value,channel:$('#ec').value,upstream:$('#eu').value,inPrice:+$('#ei').value,outPrice:+$('#eo').value,ctx:+$('#ex').value,think:$('#et').classList.contains('on'),search:$('#ew').classList.contains('on')};
+    await this.busy($('#esv'),async()=>{this.st=await this.api('/admin/models/'+encodeURIComponent(id),{method:'PUT',body:b});this.close();this.toast('已保存','ok');this.render()})},
+  async mToggle(id){const m=this.st.models.find(x=>x.id===id);try{this.st=await this.api('/admin/models/'+encodeURIComponent(id),{method:'PUT',body:{enabled:!m.enabled}});this.render()}catch(e){this.toast(e.message,'err')}},
+  async mDel(id){if(!confirm('下架并删除这个模型？'))return;try{this.st=await this.api('/admin/models/'+encodeURIComponent(id),{method:'DELETE'});this.shell()}catch(e){this.toast(e.message,'err')}},
+
+  v_users(){return `<div class="ph"><h1>用户</h1><p>可以给用户加减积分、停用账号、重置密码。</p><div class="r"><div class="search">${I('search')}<input placeholder="搜索用户名或邮箱" value="${esc(this.q)}" oninput="A.q=this.value;clearTimeout(A._qt);A._qt=setTimeout(()=>A.loadUsers(),250)"></div></div></div><div id="ulist"><div class="hint"><span class="spin"></span></div></div>`},
+  async loadUsers(){try{const j=await this.api('/admin/users?q='+encodeURIComponent(this.q));this.users=j.users;const el=$('#ulist');if(!el)return;
+    el.innerHTML=j.users.length?`<div class="rows">${j.users.map((u,i)=>`<div class="rw ${u.banned?'off':''}" style="animation-delay:${Math.min(i,12)*.03}s"><span class="av">${esc(u.username.slice(0,1).toUpperCase())}</span><div class="tt"><b>${esc(u.username)}${u.banned?'<span class="badge err">已停用</span>':''}${u.checkedToday?'<span class="badge ok">今日已签到</span>':''}</b><small>${u.email?esc(u.email)+' · ':''}注册于 ${ago(u.created)} · 连续签到 ${u.streak} 天 · 累计消耗 ${fmt(u.used)}</small></div>
+      <span class="price" style="font-size:15px;font-weight:650;color:var(--text)">${fmt(u.credits)}<small style="font-weight:400;color:var(--muted);font-size:12px"> 积分</small></span>
+      <div class="acts"><button class="btn sm s" onclick="A.uCredit('${u.id}')">${I('coin')}积分</button><button class="ib" title="${u.banned?'启用':'停用'}" onclick="A.uBan('${u.id}')">${I(u.banned?'check':'ban')}</button><button class="ib" title="重置密码" onclick="A.uPw('${u.id}')">${I('key')}</button><button class="ib" title="删除" onclick="A.uDel('${u.id}')">${I('trash')}</button></div></div>`).join('')}</div>`
+      :`<div class="card empty">${I('users')}<b>${this.q?'没有匹配的用户':'还没有用户'}</b>${this.q?'':'把聊天页发给朋友，他们注册后会出现在这里。'}</div>`}catch(e){this.toast(e.message,'err')}},
+  uCredit(id){const u=this.users.find(x=>x.id===id);this.dlg(`<div class="dh"><h3>调整积分 · ${esc(u.username)}</h3><button class="ib" onclick="A.close()">${I('x')}</button></div><div class="db">
+    <div class="hint" style="margin:0 0 12px">当前 ${fmt(u.credits)} 积分</div><div class="presets" style="margin:0 0 12px">${[10,50,100,500,-50].map(v=>`<button onclick="$('#ud').value=${v}">${v>0?'+':''}${v}</button>`).join('')}</div>
+    <div class="fld"><label>增加多少（减少就填负数）</label><input class="inp" id="ud" type="number" value="100"></div></div>
+    <div class="df"><button class="btn s" onclick="A.close()">取消</button><button class="btn p" id="usv" onclick="A.uSave('${id}',{delta:+$('#ud').value})">确定</button></div>`)},
+  async uSave(id,b){await this.busy($('#usv'),async()=>{await this.api('/admin/users/'+id,{method:'PUT',body:b});this.close();this.toast('已更新','ok');this.loadUsers()})},
+  async uBan(id){const u=this.users.find(x=>x.id===id);if(!u.banned&&!confirm('停用「'+u.username+'」？他会被立刻踢下线。'))return;try{await this.api('/admin/users/'+id,{method:'PUT',body:{banned:!u.banned}});this.loadUsers()}catch(e){this.toast(e.message,'err')}},
+  uPw(id){const u=this.users.find(x=>x.id===id);this.dlg(`<div class="dh"><h3>重置密码 · ${esc(u.username)}</h3><button class="ib" onclick="A.close()">${I('x')}</button></div><div class="db"><div class="fld"><label>新密码</label><input class="inp" id="up" type="text" value="${Math.random().toString(36).slice(2,10)}"></div><div class="hint">保存后把新密码告诉用户。</div></div>
+    <div class="df"><button class="btn s" onclick="A.close()">取消</button><button class="btn p" id="usv" onclick="A.uSave('${id}',{password:$('#up').value})">保存</button></div>`)},
+  async uDel(id){const u=this.users.find(x=>x.id===id);if(!confirm('永久删除用户「'+u.username+'」？'))return;try{await this.api('/admin/users/'+id,{method:'DELETE'});this.toast('已删除');this.loadUsers()}catch(e){this.toast(e.message,'err')}},
+
+  v_logs(){return `<div class="ph"><h1>调用记录</h1><p>最近 200 次。只记录用量，不记录聊天内容。</p></div><div class="card" style="padding:6px"><div class="tblwrap" id="lg"><div class="hint" style="padding:12px"><span class="spin"></span></div></div></div>`},
+  async loadLogs(){try{const j=await this.api('/admin/logs');const el=$('#lg');if(!el)return;
+    el.innerHTML=j.logs.length?`<table class="tbl"><thead><tr><th>时间</th><th>用户</th><th>模型</th><th>输入</th><th>输出</th><th>积分</th></tr></thead><tbody>${j.logs.map(l=>`<tr><td style="white-space:nowrap">${ago(l.t)}</td><td>${esc(l.user)}</td><td class="mono">${esc(l.model)}</td><td>${fmt(l.in)}</td><td>${fmt(l.out)}</td><td><b style="font-weight:600">${l.cost}</b>${l.ok?'':' <span class="badge">中断</span>'}</td></tr>`).join('')}</tbody></table>`:`<div class="empty">${I('list')}<b>还没有调用</b>用户开始聊天后会出现在这里。</div>`}catch(e){this.toast(e.message,'err')}},
+
+  v_codes(){return `<div class="ph"><h1>兑换码</h1><p>批量生成兑换码，发给用户或拿去卖，用户在「账户」里输入就能领积分。每个码只能用一次。</p></div>
+    <div class="card"><div class="row3"><div class="fld"><label>每个码的积分</label><input class="inp" type="number" min="1" id="cc" value="100"></div><div class="fld"><label>生成多少个</label><input class="inp" type="number" min="1" max="200" id="cn" value="10"></div><div class="fld"><label>有效天数（0 为永久）</label><input class="inp" type="number" min="0" id="cd" value="0"></div></div>
+    <div class="fld"><label>备注（只有你能看到）</label><input class="inp" id="cnote" placeholder="比如：闲鱼 11 月第一批"></div>
+    <button class="btn p" id="cgen" onclick="A.genCodes()">${I('plus')}生成兑换码</button><div id="cnew"></div></div>
+    <div class="sec"><h2>${I('list')}全部兑换码</h2><div id="clist"><div class="hint"><span class="spin"></span></div></div></div>`},
+  async genCodes(){await this.busy($('#cgen'),async()=>{const j=await this.api('/admin/codes',{method:'POST',body:{credits:+$('#cc').value,count:+$('#cn').value,days:+$('#cd').value,note:$('#cnote').value}});
+    const txt=j.codes.map(c=>c.code.replace(/(.{4})(.{4})(.{4})/,'$1-$2-$3')).join('\n');
+    $('#cnew').innerHTML=`<div class="fld" style="margin-top:14px"><label>新生成的 ${j.codes.length} 个（每个 ${j.codes[0].credits} 积分）</label><textarea class="inp" id="cnewt" readonly style="min-height:140px;font-family:ui-monospace,Menlo,monospace;letter-spacing:1px">${txt}</textarea></div><button class="btn s" onclick="navigator.clipboard&&navigator.clipboard.writeText($('#cnewt').value).then(()=>A.toast('已复制','ok'),()=>{$('#cnewt').select();document.execCommand('copy');A.toast('已复制','ok')})">${I('check')}全部复制</button>`;
+    this.toast('已生成 '+j.codes.length+' 个','ok');this.loadCodes()})},
+  async loadCodes(){const el=$('#clist');if(!el)return;try{const j=await this.api('/admin/codes');
+    el.innerHTML=j.codes.length?`<div class="hint" style="margin:0 0 10px">共 ${j.total} 个，已使用 ${j.used} 个</div><div class="rows">${j.codes.map(c=>`<div class="rw ${c.uid?'off':''}"><div class="tt"><b style="font-family:ui-monospace,Menlo,monospace;letter-spacing:1px">${c.code.replace(/(.{4})(.{4})(.{4})/,'$1-$2-$3')}</b><small>${c.credits} 积分${c.note?' · '+esc(c.note):''}${c.exp?' · '+(c.exp<Date.now()?'已过期':'有效至 '+new Date(c.exp).toLocaleDateString()):''}${c.uid?' · 已被 '+esc(c.user)+' 使用':''}</small></div>${c.uid?'<span class="badge">已用</span>':`<button class="ib" title="作废" onclick="A.delCode('${c.code}')">${I('trash')}</button>`}</div>`).join('')}</div>`:'<div class="hint">还没有兑换码。</div>'}catch(e){el.innerHTML='<div class="hint">'+esc(e.message)+'</div>'}},
+  async delCode(c){if(!confirm('作废这个兑换码？'))return;await this.api('/admin/codes/'+c,{method:'DELETE'});this.loadCodes()},
+  v_settings(){const s=this.st.settings;const n=(k,l,h,step)=>`<div class="fld"><label>${l}</label><input class="inp" type="number" min="0" step="${step||1}" data-k="${k}" value="${s[k]}">${h?`<div class="hint">${h}</div>`:''}</div>`;
+    return `<div class="ph"><h1>设置</h1><p>改完记得点保存。</p><div class="r"><button class="btn p" id="ssv" onclick="A.sSave()">保存</button></div></div>
+    <div class="card"><div class="row2"><div class="fld"><label>站点名称</label><input class="inp" data-k="siteName" value="${esc(s.siteName)}"></div><div></div></div>
+    <div class="fld"><label>公告（显示在用户的账户页）</label><textarea class="inp" data-k="notice" placeholder="比如：每晚 11 点后签到积分翻倍">${esc(s.notice)}</textarea></div>
+    <div class="swrow"><div><b>开放注册</b><small>关掉后只有已有账号能登录</small></div><button class="sw ${s.allowSignup?'on':''}" id="sreg" onclick="this.classList.toggle('on')"></button></div></div>
+    <div class="sec"><h2>${I('coin')}积分规则</h2><div class="card"><div class="row3">${n('signupBonus','注册赠送')}${n('checkin','每日签到')}${n('streakBonus','连续签到每天额外加')}</div>
+    <div class="row3">${n('streakMax','连续加成最多算几天')}${n('minBalance','低于多少积分不能聊',null,.01)}${n('maxConcurrent','每人同时请求数')}</div>
+    <div class="row3">${n('inviteBonus','邀请成功双方各得','填 0 关闭邀请奖励')}</div>
+    <div class="hint" id="sprev"></div></div></div>
+    <div class="sec"><h2>${I('mail')}邮箱验证</h2><div class="card">
+    <div class="swrow" style="margin-top:0"><div><b>注册需要邮箱验证码</b><small>${this.st.smtp.ready?'已配置发信邮箱，开启后注册要先收验证码':'先在下面填好发信邮箱，开关才会生效'}</small></div><button class="sw ${s.requireEmail?'on':''}" id="semail" onclick="this.classList.toggle('on')"></button></div>
+    <div class="row2"><div class="fld"><label>发信邮箱</label><input class="inp" id="mu" value="${esc(this.st.smtp.user||'')}" placeholder="比如 you@example.com" autocomplete="off"></div>
+    <div class="fld"><label>授权码</label><input class="inp" id="mp" type="password" placeholder="${this.st.smtp.hasPass?'已保存，留空不改':'QQ 邮箱设置里生成的授权码'}" autocomplete="new-password"></div></div>
+    <div class="row3"><div class="fld"><label>SMTP 服务器</label><input class="inp" id="mh" value="${esc(this.st.smtp.host||'smtp.qq.com')}"></div><div class="fld"><label>端口</label><input class="inp" id="mport" type="number" value="${this.st.smtp.port||465}"></div><div class="fld"><label>发件人名称</label><input class="inp" id="mn" value="${esc(this.st.smtp.fromName||'')}" placeholder="默认用站点名称"></div></div>
+    <div class="hint">授权码不是邮箱登录密码。QQ 邮箱：设置 → 账号 → 开启 SMTP 服务后生成。授权码只存在服务器，页面上不会再显示。</div>
+    <div class="caprow" style="display:flex;gap:8px;margin-top:14px"><input class="inp" id="mto" placeholder="测试收件邮箱（默认发给自己）" style="flex:1"><button class="btn s" id="mtb" onclick="A.mTest()">${I('send')}发测试邮件</button></div></div></div>
+    <div class="sec"><h2>${I('search')}联网搜索</h2><div class="card">
+    <div class="swrow" style="margin-top:0"><div><b>开启联网搜索</b><small>用户打开「联网搜索」后，AI 会通过下面的搜索服务查资料、读网页，所有模型都能用</small></div><button class="sw ${s.searchOn!==false?'on':''}" id="ssearch" onclick="this.classList.toggle('on')"></button></div>
+    <div class="fld"><label>搜索服务地址（SearXNG）</label><input class="inp" data-k="searchUrl" value="${esc(s.searchUrl||'http://127.0.0.1:8890')}" placeholder="http://127.0.0.1:8890"><div class="hint">默认是本机 Docker 里的 SearXNG。需开启 JSON 输出格式。</div></div>
+    <div class="caprow" style="display:flex;gap:8px"><input class="inp" id="sq" placeholder="测试搜索词（默认：今天的新闻）" style="flex:1"><button class="btn s" id="stb" onclick="A.sTest()">测试搜索</button></div><div class="hint" id="sres"></div></div></div>
+    <div class="sec"><h2>${I('lock')}安全</h2><div class="card"><div class="fld" style="margin:0"><label>修改管理员密码（留空不改）</label><input class="inp" type="password" id="snp" placeholder="至少 8 位" autocomplete="new-password"></div></div></div>`},
+  async mSave(){const b={user:$('#mu').value.trim(),host:$('#mh').value.trim(),port:+$('#mport').value||465,fromName:$('#mn').value.trim()};const pw=$('#mp').value.trim();if(pw)b.pass=pw;this.st=await this.api('/admin/smtp',{method:'PUT',body:b})},
+  async mTest(){await this.busy($('#mtb'),async()=>{await this.mSave();await this.api('/admin/smtp/test',{method:'POST',body:{to:$('#mto').value.trim()}});this.toast('测试邮件已发出，去收件箱看看','ok')})},
+  async sTest(){await this.busy($('#stb'),async()=>{const el=$('#sres');try{const j=await this.api('/admin/search/test',{method:'POST',body:{url:$('#main [data-k=searchUrl]').value.trim(),q:$('#sq').value.trim()}});el.innerHTML=`可用：${j.count} 条结果，用时 ${j.ms} 毫秒${j.unresponsive.length?'，未响应：'+esc(j.unresponsive.join('、')):''}<br>`+j.results.slice(0,3).map(r=>esc(r.title)).join('<br>')}catch(e){el.textContent=e.message}})},
+  async sSave(){const b={};document.querySelectorAll('#main [data-k]').forEach(el=>b[el.dataset.k]=el.type==='number'?+el.value:el.value);b.allowSignup=$('#sreg').classList.contains('on');const np=$('#snp').value;if(np)b.adminPassword=np;b.requireEmail=$('#semail').classList.contains('on');b.searchOn=$('#ssearch').classList.contains('on');
+    await this.busy($('#ssv'),async()=>{await this.mSave();this.st=await this.api('/admin/settings',{method:'PUT',body:b});this.toast('已保存','ok');this.shell()})}
+};
+A.boot();
+</script>
+</body>
+</html>

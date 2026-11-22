@@ -1,0 +1,40 @@
+{
+  "v": 1,
+  "settings": {
+    "siteName": "问津",
+    "notice": "",
+    "allowSignup": true,
+    "signupBonus": 100,
+    "checkin": 30,
+    "streakBonus": 5,
+    "streakMax": 7,
+    "minBalance": 1,
+    "maxConcurrent": 3,
+    "requireEmail": true,
+    "inviteBonus": 50,
+    "searchOn": true,
+    "searchUrl": "http://127.0.0.1:8890"
+  },
+  "redeem": [],
+  "smtp": { "host": "smtp.qq.com", "port": 465, "user": "", "pass": "", "fromName": "" },
+  "codes": {},
+  "admin": null,
+  "channels": [
+    {
+      "id": "demo-deepseek",
+      "name": "DeepSeek（示例渠道，填入 API Key 后启用）",
+      "type": "deepseek",
+      "base": "https://api.deepseek.com",
+      "key": "",
+      "enabled": false,
+      "created": 0
+    }
+  ],
+  "models": [
+    { "id": "deepseek-flash", "name": "DeepSeek V4.1 Flash", "channel": "demo-deepseek", "upstream": "deepseek-flash", "ctx": 1000000, "inPrice": 1, "outPrice": 2, "think": true, "search": false, "enabled": true, "sort": 0, "desc": "示例模型，按服务商文档核对上游模型名" },
+    { "id": "deepseek-v4-pro", "name": "DeepSeek V4 Pro", "channel": "demo-deepseek", "upstream": "deepseek-v4-pro", "ctx": 1000000, "inPrice": 3, "outPrice": 6, "think": true, "search": false, "enabled": true, "sort": 1, "desc": "示例模型，按服务商文档核对上游模型名" }
+  ],
+  "users": [],
+  "sessions": {},
+  "logs": []
+}

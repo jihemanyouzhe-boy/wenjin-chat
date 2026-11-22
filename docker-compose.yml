@@ -1,0 +1,40 @@
+# 问津 Wenjin
+#   只启动聊天服务：          docker compose up -d
+#   同时启动自建搜索 SearXNG： docker compose --profile search up -d
+# 首次启动前：cp .env.example .env，至少设置 ADMIN_PASSWORD。
+services:
+  wenjin:
+    build: .
+    image: wenjin-chat:latest
+    container_name: wenjin
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATA_DIR: /app/data
+      # 和 searxng 服务在同一个 Docker 网络里，用服务名访问
+      SEARXNG_URL: ${SEARXNG_URL_DOCKER:-http://searxng:8080}
+    ports:
+      # 前面有 nginx / Caddy 时可改成 "127.0.0.1:3000:3000"，并在 .env 里设 TRUST_PROXY=1
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+
+  # 可选：自建元搜索引擎，给「联网搜索」用。不对外暴露端口，只在内部网络里给 wenjin 调用。
+  searxng:
+    image: searxng/searxng:latest
+    container_name: wenjin-searxng
+    profiles: ["search"]
+    restart: unless-stopped
+    environment:
+      SEARXNG_BASE_URL: http://searxng:8080/
+      # 请改成一串随机字符：openssl rand -hex 32
+      SEARXNG_SECRET: ${SEARXNG_SECRET:-change-me-to-a-random-string}
+    volumes:
+      - ./searxng:/etc/searxng:rw
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID]
+    logging:
+      driver: json-file
+      options: { max-size: "1m", max-file: "1" }
